@@ -1,0 +1,13 @@
+[Unit]
+Description=deCONZ REST API to MQTT
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/ruben/deconz-mqtt
+ExecStart=/usr/bin/python client.py
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
