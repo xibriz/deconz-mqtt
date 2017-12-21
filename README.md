@@ -4,7 +4,6 @@ This is a Python library that talk to the deCONZ REST API and publishes devices 
 
 I have started simple and publish only the lights and their status. There is much on the TODO-list. Feel free to contribute with Issues or Pull Requests.
 
-- [ ] Include method of getting API key
 - [ ] Publish status of lights when changed by deCONZ
 - [ ] Change more than just the dim level on the lights (saturation, hue etc.)
 - [ ] Other devices
