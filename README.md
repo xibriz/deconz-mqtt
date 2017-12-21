@@ -19,10 +19,12 @@ $ cd deconz-mqtt/
 $ cp config/default.cfg config/prod.cfg
 ```
 
-Change all the FIXME values in `config/prod.cfg`
+Change all the FIXME values in `config/prod.cfg` exept for the `api_key`
 
-Documentation on getting the `api_key` can be found here:
-http://dresden-elektronik.github.io/deconz-rest-doc/configuration/
+Go to the SETTINGS tab in the Wireless Light web interface and click `Unlock Gateway`
+
+Run the apikey.py script
+` $ python apikey.py `
 
 Change the `WorkingDirectory` in `deconz-mqtt.service`
 
