@@ -40,10 +40,12 @@ $ sudo systemctl start deconz-mqtt.service
 From a MQTT-client:
 
 Get status from light 1
-` $ mosquitto_pub -t 'deconz/1/status' -m '' `
+` $ mosquitto_pub -t 'deconz/{group_name}/{light_name}/status' -m '' `
 
 Dim light 1 to 40%
-` $ mosquitto_pub -t 'deconz/1/set' -m '40' `
+` $ mosquitto_pub -t 'deconz/{group_name}/{light_name}/set' -m '40' `
 
 Turn off light 1
-` $ mosquitto_pub -t 'deconz/1/set' -m '0' `
+` $ mosquitto_pub -t 'deconz/{group_name}/{light_name}/set' -m '0' `
+
+Note that the `{group_name}` and `{light_name}` is the defined names in deCONZ without spaces but case sensitive.
