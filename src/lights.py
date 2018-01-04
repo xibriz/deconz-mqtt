@@ -6,6 +6,8 @@ import paho.mqtt.publish as publish
 
 class Lights:
 	bri_max = 255.0
+	groups = []
+	lights = []
 
 	def __init__(self):
 		config = ConfigParser.RawConfigParser()
@@ -21,25 +23,35 @@ class Lights:
 		self.deconz_port = config.getint('deCONZ', 'port')
 		self.api_key = config.get('deCONZ', 'api_key')
 
-	def get_light(self, id):
+		self.get_groups()
+
+	def get_light(self, light_name):
+		#print 'get_light: {}'.format(light_name)
+		id = self.get_light_id(light_name)
+
 		response = urllib2.urlopen('http://{}:{}/api/{}/lights/{}'.format(self.deconz_ip, self.deconz_port, self.api_key, id))
 		resp_dict = json.loads(response.read())
 		state = 0
 		if resp_dict['state']['on']:
 			state = int(round(resp_dict['state']['bri']/self.bri_max, 2)*100)
-		publish.single(self.topic_pub.format(id), state, hostname=self.mqtt_ip, port=self.mqtt_port)
+		
+		group_name = self.get_group_name(id)
+		publish.single(self.topic_pub.format(group_name=group_name, light_name=light_name), state, hostname=self.mqtt_ip, port=self.mqtt_port)
 
 
 	def get_lights(self):
 		response = urllib2.urlopen('http://{}:{}/api/{}/lights'.format(self.deconz_ip, self.deconz_port, self.api_key))
-		resp_dict = json.loads(response.read())
-		for key in resp_dict:
+		self.lights = json.loads(response.read())
+		for key in self.lights:
 			state = 0
-			if resp_dict[key]['state']['on']:
-				state = int(round(resp_dict[key]['state']['bri']/self.bri_max, 2)*100)
-			publish.single(self.topic_pub.format(key), state, hostname=self.mqtt_ip, port=self.mqtt_port)
+			if self.lights[key]['state']['on']:
+				state = int(round(self.lights[key]['state']['bri']/self.bri_max, 2)*100)
+			light_name = self.lights[key]['name'].replace(" ", "")
+			group_name = self.get_group_name(key)
+			publish.single(self.topic_pub.format(group_name=group_name, light_name=light_name), state, hostname=self.mqtt_ip, port=self.mqtt_port)
 
-	def set_light(self, id, state):
+	def set_light(self, light_name, state):
+		id = self.get_light_id(light_name)
 		url = 'http://{}:{}/api/{}/lights/{}/state'.format(self.deconz_ip, self.deconz_port, self.api_key, id)
 
 		if state > 0:
@@ -57,5 +69,20 @@ class Lights:
 
 		# TODO: do something with the result.. maybe call get_light?
 		#print url.read()
-		self.get_light(id)
+		self.get_light(light_name)
 
+	def get_groups(self):
+		response = urllib2.urlopen('http://{}:{}/api/{}/groups'.format(self.deconz_ip, self.deconz_port, self.api_key))
+
+		self.groups = json.loads(response.read())
+
+	def get_group_name(self, light_id):
+		for key in self.groups:
+			#print key, self.groups[key]['devicemembership']
+			if light_id in self.groups[key]['lights']:
+				return self.groups[key]['name'].replace(" ", "")
+
+	def get_light_id(self, light_name):
+		for key in self.lights:
+			if light_name == self.lights[key]['name'].replace(" ", ""):
+				return key
