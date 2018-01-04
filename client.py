@@ -20,7 +20,7 @@ def on_message(client, userdata, msg):
 	m = rg_set.search(msg.topic)
 	if m:
 		light_name = m.group(2)
-		light.set_light(light_name, int(msg.payload))
+		light.set_light(light_name, msg.payload)
 
 	m = rg_status.search(msg.topic)
 	if m:

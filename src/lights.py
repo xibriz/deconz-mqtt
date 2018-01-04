@@ -34,7 +34,7 @@ class Lights:
 		state = 0
 		if resp_dict['state']['on']:
 			state = int(round(resp_dict['state']['bri']/self.bri_max, 2)*100)
-		
+
 		group_name = self.get_group_name(id)
 		publish.single(self.topic_pub.format(group_name=group_name, light_name=light_name), state, hostname=self.mqtt_ip, port=self.mqtt_port)
 
@@ -51,6 +51,12 @@ class Lights:
 			publish.single(self.topic_pub.format(group_name=group_name, light_name=light_name), state, hostname=self.mqtt_ip, port=self.mqtt_port)
 
 	def set_light(self, light_name, state):
+		try:
+			state = int(state)
+		except ValueError:
+			self.get_light(light_name)
+			return False
+
 		id = self.get_light_id(light_name)
 		url = 'http://{}:{}/api/{}/lights/{}/state'.format(self.deconz_ip, self.deconz_port, self.api_key, id)
 
