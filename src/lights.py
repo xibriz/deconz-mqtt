@@ -29,8 +29,12 @@ class Lights:
 		#print 'get_light: {}'.format(light_name)
 		id = self.get_light_id(light_name)
 
-		response = urllib2.urlopen('http://{}:{}/api/{}/lights/{}'.format(self.deconz_ip, self.deconz_port, self.api_key, id))
-		resp_dict = json.loads(response.read())
+		try:
+			response = urllib2.urlopen('http://{}:{}/api/{}/lights/{}'.format(self.deconz_ip, self.deconz_port, self.api_key, id))
+			resp_dict = json.loads(response.read())
+		except urllib2.HTTPError, urllib2.URLError:
+			return False
+
 		state = 0
 		if resp_dict['state']['on']:
 			state = int(round(resp_dict['state']['bri']/self.bri_max, 2)*100)
@@ -40,8 +44,12 @@ class Lights:
 
 
 	def get_lights(self):
-		response = urllib2.urlopen('http://{}:{}/api/{}/lights'.format(self.deconz_ip, self.deconz_port, self.api_key))
-		self.lights = json.loads(response.read())
+		try:
+			response = urllib2.urlopen('http://{}:{}/api/{}/lights'.format(self.deconz_ip, self.deconz_port, self.api_key))
+			self.lights = json.loads(response.read())
+		except urllib2.HTTPError, urllib2.URLError:
+			return False
+
 		for key in self.lights:
 			state = 0
 			if self.lights[key]['state']['on']:
@@ -67,20 +75,24 @@ class Lights:
 		else:
 			data = json.dumps({'on': False})
 
-		opener = urllib2.build_opener(urllib2.HTTPHandler)
-		request = urllib2.Request(url, data=data)
-		request.add_header('Content-Type', 'application/json')
-		request.get_method = lambda: 'PUT'
-		url = opener.open(request)
+		try:
+			opener = urllib2.build_opener(urllib2.HTTPHandler)
+			request = urllib2.Request(url, data=data)
+			request.add_header('Content-Type', 'application/json')
+			request.get_method = lambda: 'PUT'
+			url = opener.open(request)
 
-		# TODO: do something with the result.. maybe call get_light?
-		#print url.read()
-		self.get_light(light_name)
+			#print url.read()
+			self.get_light(light_name)
+		except urllib2.HTTPError, urllib2.URLError:
+			return False
 
 	def get_groups(self):
-		response = urllib2.urlopen('http://{}:{}/api/{}/groups'.format(self.deconz_ip, self.deconz_port, self.api_key))
-
-		self.groups = json.loads(response.read())
+		try:
+			response = urllib2.urlopen('http://{}:{}/api/{}/groups'.format(self.deconz_ip, self.deconz_port, self.api_key))
+			self.groups = json.loads(response.read())
+		except urllib2.HTTPError, urllib2.URLError:
+			return False
 
 	def get_group_name(self, light_id):
 		for key in self.groups:
