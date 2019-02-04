@@ -37,11 +37,8 @@ class Lights:
 
 		state = 0
 		if resp_dict['state']['on']:
-			try:
-				state = int(round(resp_dict['state']['bri']/self.bri_max, 2)*100)
-			except KeyError:
-				state = 100
-		
+			state = int(round(resp_dict['state'].get('bri',self.bri_max)/self.bri_max, 2)*100)
+	
 		group_name = self.get_group_name(id)
 		publish.single(self.topic_pub.format(group_name=group_name, light_name=light_name), state, hostname=self.mqtt_ip, port=self.mqtt_port)
 
@@ -56,10 +53,7 @@ class Lights:
 		for key in self.lights:
 			state = 0
 			if self.lights[key]['state']['on']:
-				try:
-					state = int(round(self.lights[key]['state']['bri']/self.bri_max, 2)*100)
-				except KeyError:
-					state = 100
+				state = int(round(self.lights[key]['state'].get('bri',self.bri_max)/self.bri_max, 2)*100)
 
 			light_name = self.lights[key]['name'].replace(" ", "")
 			group_name = self.get_group_name(key)
