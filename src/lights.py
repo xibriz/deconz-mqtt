@@ -39,7 +39,7 @@ class Lights:
 		if resp_dict['state']['on']:
 			try:
 				state = int(round(resp_dict['state']['bri']/self.bri_max, 2)*100)
-			expect KeyError:
+			except KeyError:
 				state = 100
 		
 		group_name = self.get_group_name(id)
