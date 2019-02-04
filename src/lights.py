@@ -57,7 +57,6 @@ class Lights:
 
 			light_name = self.lights[key]['name'].replace(" ", "")
 			group_name = self.get_group_name(key)
-			print 'get_lights {} {} {} {} {}'.format(group_name, light_name, state, self.lights[key]['state'].get('bri',self.bri_max), self.lights[key]['state'])
 			publish.single(self.topic_pub.format(group_name=group_name, light_name=light_name), state, hostname=self.mqtt_ip, port=self.mqtt_port)
 
 	def set_light(self, light_name, state):
