@@ -51,9 +51,10 @@ class Lights:
 			return False
 
 		for key in self.lights:
-			state = 0
-			if self.lights[key]['state']['on']:
-				state = int(round(self.lights[key]['state'].get('bri',self.bri_max)/self.bri_max, 2)*100)
+			if 'on' in self.lights[key]['state']:
+				state = 0
+				if self.lights[key]['state']['on']:
+					state = int(round(self.lights[key]['state'].get('bri',self.bri_max)/self.bri_max, 2)*100)
 
 			light_name = self.lights[key]['name'].replace(" ", "")
 			group_name = self.get_group_name(key)
