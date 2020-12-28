@@ -1,5 +1,8 @@
 import paho.mqtt.client as mqtt
 import re
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 from src import lights
 
 light = lights.Lights()
